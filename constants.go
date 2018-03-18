@@ -285,4 +285,4 @@ const (
 	HotplugEventAny           HotplugEventType = HotplugEventDeviceArrived | HotplugEventDeviceLeft
 )
 
-const HotplugMatchAny = C.LIBUSB_HOTPLUG_MATCH_ANY
+const hotplugMatchAny = C.LIBUSB_HOTPLUG_MATCH_ANY
