@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <libusb.h>
+#include <libusb-1.0/libusb.h>
 #include "_cgo_export.h"
 
 int gousb_hotplug_register_callback(

@@ -25,8 +25,8 @@ import (
 )
 
 /*
-#cgo pkg-config: libusb-1.0
-#include <libusb.h>
+#cgo LDFLAGS: -lusb-1.0
+#include <libusb-1.0/libusb.h>
 #include <stdlib.h>
 
 int gousb_compact_iso_data(struct libusb_transfer *xfer, unsigned char *status);
@@ -44,6 +44,15 @@ int gousb_hotplug_register_callback(
 	libusb_hotplug_callback_handle *handle
 );
 */
+import "C"
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <libusb-1.0/libusb.h>
+//
+// static void mylibusb_set_option(libusb_context *ctx, enum libusb_option option, int lvl) {
+//	libusb_set_option(ctx, option, lvl);
+// }
 import "C"
 
 type libusbContext C.libusb_context
@@ -247,7 +256,15 @@ func (libusbImpl) exit(c *libusbContext) error {
 }
 
 func (libusbImpl) setDebug(c *libusbContext, lvl int) {
-	C.libusb_set_debug((*C.libusb_context)(c), C.int(lvl))
+
+	ver := C.LIBUSB_API_VERSION
+
+	if ver >= 0x01000106 {
+		C.mylibusb_set_option((*C.libusb_context)(c), C.LIBUSB_OPTION_LOG_LEVEL, C.int(lvl))
+	} else {
+		C.libusb_set_debug((*C.libusb_context)(c), C.int(lvl))
+	}
+
 }
 
 func (libusbImpl) getDeviceDesc(d *libusbDevice) (*DeviceDesc, error) {
@@ -527,7 +544,15 @@ func xferCallback(xfer *C.struct_libusb_transfer) {
 
 // for benchmarking and testing
 func libusbSetDebug(c *libusbContext, lvl int) {
-	C.libusb_set_debug((*C.libusb_context)(c), C.int(lvl))
+
+	ver := C.LIBUSB_API_VERSION
+
+	if ver >= 0x01000106 {
+		C.mylibusb_set_option((*C.libusb_context)(c), C.LIBUSB_OPTION_LOG_LEVEL, C.int(lvl))
+	} else {
+		C.libusb_set_debug((*C.libusb_context)(c), C.int(lvl))
+	}
+
 }
 
 func newDevicePointer() *libusbDevice {
